@@ -7,6 +7,9 @@
     "name": "bouzuya",
     "url": "https://bouzuya.net/"
   },
+  "bin": {
+    "purscat": "./bin/purscat"
+  },
   "bugs": {
     "url": "https://github.com/bouzuya/purescript-cat/issues"
   },
