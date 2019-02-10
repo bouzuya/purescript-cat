@@ -1,0 +1,28 @@
+{
+  "name": "purescript-cat",
+  "description": "cat",
+  "version": "0.0.0",
+  "author": {
+    "email": "m@bouzuya.net",
+    "name": "bouzuya",
+    "url": "https://bouzuya.net/"
+  },
+  "bugs": {
+    "url": "https://github.com/bouzuya/purescript-cat/issues"
+  },
+  "dependencies": {
+    "purescript": "^0.12.2",
+    "spago": "^0.6.4"
+  },
+  "homepage": "https://github.com/bouzuya/purescript-cat#readme",
+  "keywords": [],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bouzuya/purescript-cat.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
