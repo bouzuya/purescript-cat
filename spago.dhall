@@ -5,7 +5,7 @@ You can edit this file as you like.
 { name =
     "my-project"
 , dependencies =
-    [ "effect", "console" ]
+    [ "console", "effect", "node-fs-aff", "node-process" ]
 , packages =
     ./packages.dhall
 }
