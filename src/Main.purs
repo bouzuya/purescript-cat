@@ -56,4 +56,16 @@ main = Aff.launchAff_ do
       (readFromStream Process.stdin)
       (\file -> Fs.readTextFile Encoding.UTF8 file)
       (Array.index options.files 0)
-  Console.log text
+  let
+    pad5 n
+      | n < 10 = "    " <> show n
+      | n < 100 = "   " <> show n
+      | n < 1000 = "  " <> show n
+      | n < 10000 = " " <> show n
+      | otherwise = show n
+  Console.log
+    (Array.intercalate
+      "\n"
+      (Array.mapWithIndex
+        (\index s -> (if options.number then pad5 (index + 1) <> " " else "") <> s)
+        (String.split (String.Pattern "\n") text)))
