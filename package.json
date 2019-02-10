@@ -23,6 +23,7 @@
     "url": "git+https://github.com/bouzuya/purescript-cat.git"
   },
   "scripts": {
+    "spago": "spago",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
