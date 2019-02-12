@@ -5,10 +5,11 @@ import Prelude
 import Data.Array as Array
 import Data.Maybe as Maybe
 import Data.String as String
+import Data.Tuple (Tuple(..))
+import Data.Tuple as Tuple
 import Effect (Effect)
 import Effect.Aff as Aff
 import Effect.Class (liftEffect)
-import Effect.Class.Console (logShow)
 import Effect.Class.Console as Console
 import Effect.Ref as Ref
 import Node.Encoding as Encoding
@@ -30,7 +31,13 @@ readFromStream r =
         callback (pure buffer)
       pure mempty)
 
-readOptions :: Array String -> { files :: Array String, number :: Boolean }
+type Options =
+  { files :: Array String
+  , number :: Boolean
+  , numberNonblank :: Boolean
+  }
+
+readOptions :: Array String -> Options
 readOptions argv = do
   Record.merge
     { files:
@@ -42,9 +49,10 @@ readOptions argv = do
       (\o s ->
         case s of
           "--number" -> Record.merge { number: true } o
+          "--number-nonblank" -> Record.merge { numberNonblank: true } o
           _ -> o
       )
-      { number: false }
+      { number: false, numberNonblank: false }
       argv)
 
 main :: Effect Unit
@@ -64,8 +72,18 @@ main = Aff.launchAff_ do
       | n < 10000 = " " <> show n
       | otherwise = show n
   Console.log
-    (Array.intercalate
-      "\n"
-      (Array.mapWithIndex
-        (\index s -> (if options.number then pad5 (index + 1) <> " " else "") <> s)
+    (Tuple.snd
+      (Array.foldl
+        (\(Tuple n b) s ->
+          let
+            line =
+              ( if options.numberNonblank
+                then (if String.null s then "     " else pad5 n) <> " "
+                else if options.number then pad5 n <> " "
+                else ""
+              ) <> s
+            number =
+              if options.numberNonblank && String.null s then n else n + 1
+          in Tuple number (b <> "\n" <> line))
+        (Tuple 1 "")
         (String.split (String.Pattern "\n") text)))
