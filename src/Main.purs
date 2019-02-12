@@ -35,6 +35,7 @@ type Options =
   { files :: Array String
   , number :: Boolean
   , numberNonblank :: Boolean
+  , squeezeBlank :: Boolean
   }
 
 readOptions :: Array String -> Options
@@ -50,9 +51,10 @@ readOptions argv = do
         case s of
           "--number" -> Record.merge { number: true } o
           "--number-nonblank" -> Record.merge { numberNonblank: true } o
+          "--squeeze-blank" -> Record.merge { squeezeBlank: true } o
           _ -> o
       )
-      { number: false, numberNonblank: false }
+      { number: false, numberNonblank: false, squeezeBlank: false }
       argv)
 
 main :: Effect Unit
@@ -72,18 +74,22 @@ main = Aff.launchAff_ do
       | n < 10000 = " " <> show n
       | otherwise = show n
   Console.log
-    (Tuple.snd
+    (_.s
       (Array.foldl
-        (\(Tuple n b) s ->
-          let
-            line =
-              ( if options.numberNonblank
-                then (if String.null s then "     " else pad5 n) <> " "
-                else if options.number then pad5 n <> " "
-                else ""
-              ) <> s
-            number =
-              if options.numberNonblank && String.null s then n else n + 1
-          in Tuple number (b <> "\n" <> line))
-        (Tuple 1 "")
+        (\{ b, n, s } l ->
+          let isBlank = String.null l
+          in
+            if options.squeezeBlank && b && isBlank
+            then { b, n, s }
+            else
+              let
+                line =
+                  ( if options.numberNonblank
+                    then (if isBlank then "     " else pad5 n) <> " "
+                    else if options.number then pad5 n <> " "
+                    else ""
+                  ) <> l
+                number = if options.numberNonblank && isBlank then n else n + 1
+              in { b: isBlank, n: number, s: (s <> "\n" <> line) })
+        { b: false, n: 1, s: "" }
         (String.split (String.Pattern "\n") text)))
